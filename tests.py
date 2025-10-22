@@ -3,17 +3,39 @@
 from functions.get_files_info import get_files_info
 from functions.get_file_content import get_file_content
 from functions.write_file import write_file
+from functions.run_python_file import run_python_file
+
+#TESTING RUN PYTHON FILE
+
+print(f'Results for calculator/main.py')
+print(f'{run_python_file("calculator", "main.py")} \n')
+
+print(f'Results for calculator/main.py [3+5]')
+print(f'{run_python_file("calculator", "main.py", ["3 + 5"])} \n')
+
+print(f'Results for calculator/tests.py')
+print(f'{run_python_file("calculator", "tests.py")} \n')
+
+print(f'Results for calculator/../main.py (Should error)')
+print(f'{run_python_file("calculator", "../main.py")} \n')
+
+print(f'Results for calculator/nonexistant.py (Should error)')
+print(f'{run_python_file("calculator", "nonexistent.py")} \n')
+
+print(f'Results for calculator/lerem.txt (Should error)')
+print(f'{run_python_file("calculator", "lorem.txt")} \n')
+
 
 #TESTING WRITE FILE
 
-print(f'Results for lorem.txt')
-print(f'{write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")} \n')
+# print(f'Results for lorem.txt')
+# print(f'{write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")} \n')
 
-print(f'Results for pkg/mroelorem.txt')
-print(f'{write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")} \n')
+# print(f'Results for pkg/mroelorem.txt')
+# print(f'{write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")} \n')
 
-print(f'Results for /tmp/temp.txt')
-print(f'{write_file("calculator", "/tmp/temp.txt", "this should not be allowed")} \n')
+# print(f'Results for /tmp/temp.txt')
+# print(f'{write_file("calculator", "/tmp/temp.txt", "this should not be allowed")} \n')
 
 
 #TESTING GET FILE CONTENT

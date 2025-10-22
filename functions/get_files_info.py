@@ -1,4 +1,4 @@
-# get_files_info.py
+# functions/get_files_info.py
 
 import os
 

@@ -1,5 +1,5 @@
-import os
-import sys
+# main.py
+
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types

@@ -1,4 +1,4 @@
-# get_file_content.py
+# functions/get_file_content.py
 
 import os
 from functions.config import MAX_CHARACTERS

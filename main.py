@@ -9,6 +9,7 @@ from functions.get_files_info import schema_get_files_info
 from functions.get_file_content import schema_get_file_content
 from functions.write_file import schema_write_file
 from functions.run_python_file import schema_run_python_file
+from functions.call_function import call_function
 
 def main():
     # loads env variables and inits genemi client instance, and system prompt
@@ -43,10 +44,11 @@ def main():
         sys.exit(1)
     user_prompt = sys.argv[1]
 
-    # historical list of messages
+    # historical list of messages and function calls
     messages = [
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
+    function_responses = []
 
     # calling the llm
     response = client.models.generate_content(
@@ -56,11 +58,16 @@ def main():
     )
     if response.function_calls:
         for function_call_part in response.function_calls:
-            print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+            function_call_result = call_function(function_call_part)
+            if function_call_result.parts[0].function_response.response is None:
+                raise Exception("error: function call had a null response")
+            else:
+                function_responses.append(function_call_result.parts[0])
     else:
         print(response.text)
 
     if sys.argv[-1] == '--verbose':
+        print(f"-> {function_call_result.parts[0].function_response.response}")
         print(f"User prompt: {user_prompt}")
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")

@@ -2,6 +2,7 @@
 
 import os
 from functions.config import MAX_CHARACTERS
+from google.genai import types
 
 def get_file_content(working_directory, file_path):
     # returns the contents of the specified file as a string
@@ -23,3 +24,18 @@ def get_file_content(working_directory, file_path):
                 return file_content_string
     except:
         return 'Error: Could not perform file operation'
+    
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Returns the content of the specified file as a string, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to the file where content is read from, relative to the working directory.",
+            ),
+        },
+    ),
+)

@@ -50,24 +50,43 @@ def main():
     ]
     function_responses = []
 
-    # calling the llm
-    response = client.models.generate_content(
-        model='gemini-2.0-flash-001', 
-        contents=messages,
-        config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt)
-    )
-    if response.function_calls:
-        for function_call_part in response.function_calls:
-            function_call_result = call_function(function_call_part)
-            if function_call_result.parts[0].function_response.response is None:
-                raise Exception("error: function call had a null response")
-            else:
-                function_responses.append(function_call_result.parts[0])
-    else:
-        print(response.text)
+
+    for i in range(20):
+        try:
+            # calling the llm
+            response = client.models.generate_content(
+                model='gemini-2.0-flash-001', 
+                contents=messages,
+                config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt)
+            )
+
+            #determining if agent is finished with task
+            if not response.function_calls and response.text:
+                print(f"Final response:\n\n{response.text}")
+                break
+
+            # adding context to llm messages list
+            for candidate in response.candidates:
+                messages.append(candidate.content)
+
+            # calling functions or printing text result
+            if response.function_calls:
+                for function_call_part in response.function_calls:
+                    function_call_result = call_function(function_call_part, verbose=False)
+                    if not function_call_result.parts[0].function_response.response:
+                        raise Exception("error: function call had a null response")
+                    else:
+                        function_responses.append(function_call_result.parts[0])
+                        if sys.argv[-1] == '--verbose':
+                            print(f"-> {function_call_result.parts[0].function_response.response}")
+
+            # adding function responses context
+            messages.append(types.Content(role="user", parts=function_responses))
+
+        except:
+            print(Exception)
 
     if sys.argv[-1] == '--verbose':
-        print(f"-> {function_call_result.parts[0].function_response.response}")
         print(f"User prompt: {user_prompt}")
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
